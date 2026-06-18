@@ -39,7 +39,8 @@ export class UserController {
     }
   };
 
-  users = async (_req: Request, res: Response, next: NextFunction) => {
+  getUsers = async (_req: Request, res: Response, next: NextFunction) => {
+    console.log('Fetching all users...');
     try {
       const users = await this.service.findAll();
       res.json(users.map(u => this.service.toDto(u)));
