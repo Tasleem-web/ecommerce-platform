@@ -1,0 +1,108 @@
+openapi: 3.0.3
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:          { type: integer }
+        name:        { type: string }
+        description: { type: string, nullable: true }
+        price:       { type: number }
+        stock:       { type: integer }
+        createdAt:   { type: string, format: date-time }
+        updatedAt:   { type: string, format: date-time }
+
+    ProductInput:
+      type: object
+      required: [name, price]
+      properties:
+        name:        { type: string }
+        description: { type: string }
+        price:       { type: number }
+        stock:       { type: integer }
+
+    ProductList:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Product' }
+        total: { type: integer }
+
+paths:
+  /products:
+    get:
+      tags: [Products]
+      summary: List products
+      parameters:
+        - in: query
+          name: limit
+          schema: { type: integer, default: 50 }
+        - in: query
+          name: offset
+          schema: { type: integer, default: 0 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProductList' }
+
+    post:
+      tags: [Products]
+      summary: Create a product (admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProductInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Product' }
+
+  /products/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: integer }
+    get:
+      tags: [Products]
+      summary: Get a product by id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Product' }
+        '404':
+          description: Not found
+
+    put:
+      tags: [Products]
+      summary: Update a product (admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProductInput' }
+      responses:
+        '200':
+          description: Updated
+
+    delete:
+      tags: [Products]
+      summary: Delete a product (admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: No content
