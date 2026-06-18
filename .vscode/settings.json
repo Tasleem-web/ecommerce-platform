@@ -1,6 +1,8 @@
 {
     "chat.tools.terminal.autoApprove": {
         "npm run dev": true,
-        "npm install": true
+        "npm install": true,
+        "mkdir": true,
+        "Move-Item": true
     }
 }
