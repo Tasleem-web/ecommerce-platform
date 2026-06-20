@@ -34,6 +34,7 @@ export function requireAuth(req: Request, _res: Response, next: NextFunction): v
 export function requireRole(...roles: string[]) {
   return (req: Request, _res: Response, next: NextFunction): void => {
     if (!req.user) return next(new UnauthorizedError());
+    console.log("req.user", req.user)
     const ok = roles.some((r) => req.user!.roles.includes(r));
     if (!ok) return next(new ForbiddenError(`Requires one of roles: ${roles.join(', ')}`));
     next();

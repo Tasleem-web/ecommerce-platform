@@ -4,7 +4,7 @@ import { createApp, logger } from './app';
 async function main() {
   const { app, sequelize } = await createApp();
   const server = app.listen(userConfig.port, () => {
-    logger.info(`${userConfig.serviceName} listening on :${userConfig.port}`);
+    logger.info(`${userConfig.serviceName} listening on http://localhost:${userConfig.port}`);
     logger.info(`Swagger UI -> http://localhost:${userConfig.port}/docs`);
   });
 

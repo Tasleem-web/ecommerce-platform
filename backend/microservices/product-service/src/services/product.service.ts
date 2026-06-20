@@ -2,10 +2,16 @@ import { NotFoundError } from '../../../shared';
 import { Product } from '../models/product.model';
 
 export interface CreateProductInput {
-  name: string;
-  description?: string | null;
+  title: string;
+  category: string;
+  image: string;
   price: number;
+  description?: string;
   stock?: number;
+  rating?: {           // Add the optional rating object here
+    rate: number;
+    count: number;
+  };
 }
 
 export type UpdateProductInput = Partial<CreateProductInput>;
@@ -28,10 +34,13 @@ export class ProductService {
 
   async create(input: CreateProductInput) {
     return Product.create({
-      name: input.name,
-      description: input.description ?? null,
+      title: input.title,
+      category: input.category,
+      image: input.image,
       price: input.price,
+      description: input.description ?? null,
       stock: input.stock ?? 0,
+      rating: input.rating ?? { rate: 0, count: 0 },
     });
   }
 

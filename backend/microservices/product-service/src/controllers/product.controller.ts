@@ -4,7 +4,7 @@ import { ProductService } from '../services/product.service';
 import { createProductSchema, updateProductSchema } from '../validators/product.validator';
 
 export class ProductController {
-  constructor(private readonly service: ProductService) {}
+  constructor(private readonly service: ProductService) { }
 
   list = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -27,6 +27,7 @@ export class ProductController {
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { error, value } = createProductSchema.validate(req.body, { abortEarly: false });
+      console.log("error", error)
       if (error) throw new BadRequestError('Invalid payload', error.details);
       const product = await this.service.create(value);
       res.status(201).json(product);

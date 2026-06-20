@@ -1,26 +1,49 @@
 openapi: 3.0.3
 
+info:
+  title: Product API
+  version: 1.0.0
+
 components:
   schemas:
+    Rating:
+      type: object
+      required: [rate, count]
+      properties:
+        rate:
+          type: number
+          format: float
+          example: 3.9
+        count:
+          type: integer
+          example: 120
+
     Product:
       type: object
+      required: [id, title, category, image, price, stock, createdAt, updatedAt]
       properties:
         id:          { type: integer }
-        name:        { type: string }
+        title:       { type: string }
+        category:    { type: string }
+        image:       { type: string, format: uri }
         description: { type: string, nullable: true }
         price:       { type: number }
         stock:       { type: integer }
+        rating:      { $ref: '#/components/schemas/Rating' }
         createdAt:   { type: string, format: date-time }
         updatedAt:   { type: string, format: date-time }
 
     ProductInput:
       type: object
-      required: [name, price]
+      required: [title, category, image, price]
       properties:
-        name:        { type: string }
+        title:       { type: string }
+        category:    { type: string }
+        image:       { type: string, format: uri }
         description: { type: string }
         price:       { type: number }
-        stock:       { type: integer }
+        stock:       { type: integer, default: 0 }
+        rating:      { $ref: '#/components/schemas/Rating' }
 
     ProductList:
       type: object
@@ -29,6 +52,12 @@ components:
           type: array
           items: { $ref: '#/components/schemas/Product' }
         total: { type: integer }
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 
 paths:
   /products:
