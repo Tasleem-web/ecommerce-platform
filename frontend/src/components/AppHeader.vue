@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-0">
       <div class="container">
         <div>
           <button
@@ -31,34 +31,34 @@
           </div>
         </div>
 
-        <div class="dropdown">
-          <button
-            class="btn btn-secondary dropdown-toggle"
-            type="button"
+        <div v-if="currentUser" class="dropdown" data-bs-auto-close="outside">
+          <div
+            class="profile-icon"
             id="dropdownMenu2"
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            {{ currentUser ? currentUser.name : "Account" }}
-          </button>
-          <div class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="dropdownMenu2" @click.prevent>
-            <Account />
+            <img
+              :src="
+                currentUser.image ||
+                'https://res.cloudinary.com/tasleem/image/upload/v1782056301/male_user_icon_voqiwc.png'
+              "
+              class="rounded-circle"
+              alt="Profile"
+            />
           </div>
-          <!-- <ul class="dropdown-menu end-0" aria-labelledby="dropdownMenu2">
-            <li v-if="currentUser">
-              <button class="dropdown-item" type="button" @click="logoutUser">
-                Logout
-              </button>
-            </li>
-            <li v-else>
-              <router-link class="dropdown-item" :to="{ name: 'Login' }">
-                Login
-              </router-link>
-            </li>
-          </ul> -->
+          <div
+            class="dropdown-menu dropdown-menu-end p-0"
+            aria-labelledby="dropdownMenu2"
+            @click.stop
+          >
+            <Account :currentUser="currentUser" />
+          </div>
         </div>
+        <router-link v-else class="nav-link" :to="{ name: 'Login' }"> Login </router-link>
+      </div>
 
-        <!-- <div class="dropdown">
+      <!-- <div class="dropdown">
           <button
             class="btn btn-secondary dropdown-toggle"
             type="button"
@@ -70,7 +70,6 @@
           </button>
           <MiniCart />
         </div> -->
-      </div>
     </nav>
   </div>
 </template>
@@ -132,4 +131,22 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.profile-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  border: 1px solid;
+  background-color: #fff;
+  cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+}
+</style>

@@ -103,8 +103,8 @@ export default {
   data() {
     return {
       formData: {
-        email: "tasleem+admin@mail.com",
-        password: "123456789",
+        email: "",
+        password: "",
         rememberMe: false,
       },
       touched: {
@@ -146,21 +146,26 @@ export default {
 
       if (!this.isFormValid) {
         this.addNotification({
-          type: 'danger',
-          message: 'Please enter a valid email and password.',
+          type: "danger",
+          message: "Please enter a valid email and password.",
         });
         return;
       }
 
       try {
-        await this.authenticate({ email: this.formData.email, password: this.formData.password });
-        this.$router.push({ name: 'home' });
+        await this.authenticate({
+          email: this.formData.email,
+          password: this.formData.password,
+        });
+        this.$router.push({ name: "home" });
       } catch (err) {
-        console.error('Login failed', err);
+        console.error("Login failed", err);
         this.addNotification({
-          type: 'danger',
+          type: "danger",
           message:
-            err?.response?.data?.message || err.message || 'Login failed. Please check your credentials.',
+            err?.response?.data?.message ||
+            err.message ||
+            "Login failed. Please check your credentials.",
         });
       }
     },

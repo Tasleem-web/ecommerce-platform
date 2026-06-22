@@ -1,32 +1,57 @@
 <template>
   <!-- ================= ELEMENT: PROFILE DROPDOWN CARD ================= -->
-  <div class="card account-dropdown-card shadow p-3">
-    <!-- Close Window Trigger -->
-    <div class="d-flex justify-content-end mb-2">
-      <button type="button" class="btn-close fs-6 p-2" aria-label="Close"></button>
-    </div>
-
-    <div class="text-center px-3">
-      <div class="text-muted small mb-3 text-truncate">tasleembca31@gmail.com</div>
+  <div class="card account-dropdown-card shadow p-3" @click.prevent>
+    <div class="text-center">
+      <div
+        class="text-muted small mb-3 text-truncate d-flex justify-content-between align-items-center"
+        v-if="currentUser"
+      >
+        <span class="text-dark">{{ currentUser.email }}</span>
+        <button type="button" class="btn-close fs-6 p-2" aria-label="Close"></button>
+      </div>
 
       <!-- User Avatar Segment -->
       <div class="profile-pic-wrapper mb-3">
-        <img src="https://unsplash.com" alt="User profile photo" />
-        <div class="camera-overlay-badge" title="Change profile photo">
-          <i class="fa-solid fa-camera"></i>
-        </div>
+        <img
+          :src="
+            currentUser.image ||
+            'https://res.cloudinary.com/tasleem/image/upload/v1782056301/male_user_icon_voqiwc.png'
+          "
+          alt="User profile photo"
+        />
       </div>
 
-      <h2 class="fs-4 fw-normal mb-3 text-dark">Hi, Mohammad!</h2>
+      <h2 class="fs-4 fw-normal mb-3 text-dark" v-if="currentUser">
+        Hi, {{ currentUser.name }}!
+      </h2>
 
-      <a href="#" class="btn btn-google-pill mb-4">Manage your Google Account</a>
+      <a href="#" class="btn btn-google-pill" @click="logoutUser">Logout</a>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: "AccountComponent",
+  props: {
+    currentUser: {
+      type: Object,
+      default: null,
+    },
+  },
+  methods: {
+    ...mapActions("userModule", ["logout"]),
+    ...mapActions(["addNotification"]),
+    async logoutUser() {
+      await this.logout();
+      this.addNotification({
+        type: "success",
+        message: "Logged out successfully",
+      });
+      this.$router.push({ name: "home" });
+    },
+  },
 };
 </script>
 
@@ -36,7 +61,6 @@ export default {
   width: min(400px, 100vw);
   max-width: 280px;
   background-color: #f8fafd;
-  border-radius: 28px !important;
   border: none;
 }
 

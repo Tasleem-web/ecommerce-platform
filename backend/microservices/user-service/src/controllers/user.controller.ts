@@ -43,6 +43,7 @@ export class UserController {
       res.json({
         message: 'Login successful',
         user: result.user,
+        token: result.token,
       });
     } catch (err) {
       next(err);
