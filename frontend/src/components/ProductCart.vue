@@ -40,13 +40,6 @@ import { Tooltip } from "bootstrap";
 export default {
   name: "ProductCart",
   props: ["product"],
-  mounted() {
-    // Initialize tooltip for this component
-    const tooltips = this.$el.querySelectorAll('[data-bs-toggle="tooltip"]');
-    tooltips.forEach((el) => {
-      new Tooltip(el);
-    });
-  },
   methods: {
     ...mapActions("cartModule", ["addProductToCart"]),
     addToCart() {

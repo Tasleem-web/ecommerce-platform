@@ -13,6 +13,8 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare passwordHash: string;
   declare name: string;
   declare roles: CreationOptional<string>;
+  declare image: CreationOptional<string | null>;
+  declare gender: CreationOptional<string | null>;
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
 }
@@ -26,6 +28,8 @@ export function initUserModel(sequelize: Sequelize): typeof User {
       name: { type: DataTypes.STRING(120), allowNull: false },
       // Comma-separated roles to keep schema simple (e.g. "user,admin").
       roles: { type: DataTypes.STRING(120), allowNull: false, defaultValue: 'user' },
+      image: { type: DataTypes.STRING(255), allowNull: true },
+      gender: { type: DataTypes.STRING(20), allowNull: true },
       createdAt: DataTypes.DATE,
       updatedAt: DataTypes.DATE,
     },

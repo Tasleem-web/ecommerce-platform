@@ -24,16 +24,39 @@
               >
                 {{ navbar.name }}
               </router-link>
-              <router-link
-                v-if="isAdmin"
-                class="nav-link"
-                :to="{ name: 'admin' }"
-              >
+              <router-link v-if="isAdmin" class="nav-link" :to="{ name: 'admin' }">
                 Admin
               </router-link>
             </div>
           </div>
-        </div> 
+        </div>
+
+        <div class="dropdown">
+          <button
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+            id="dropdownMenu2"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {{ currentUser ? currentUser.name : "Account" }}
+          </button>
+          <div class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="dropdownMenu2" @click.prevent>
+            <Account />
+          </div>
+          <!-- <ul class="dropdown-menu end-0" aria-labelledby="dropdownMenu2">
+            <li v-if="currentUser">
+              <button class="dropdown-item" type="button" @click="logoutUser">
+                Logout
+              </button>
+            </li>
+            <li v-else>
+              <router-link class="dropdown-item" :to="{ name: 'Login' }">
+                Login
+              </router-link>
+            </li>
+          </ul> -->
+        </div>
 
         <!-- <div class="dropdown">
           <button
@@ -53,17 +76,33 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 // import MiniCart from "./MiniCart.vue";
+import Account from "./Account.vue";
+
 export default {
   name: "AppHeader",
   components: {
     // MiniCart,
+    Account,
   },
   computed: {
     ...mapGetters({
+      currentUser: "userModule/currentUser",
       isAdmin: "userModule/isAdmin",
     }),
+  },
+  methods: {
+    ...mapActions("userModule", ["logout"]),
+    ...mapActions(["addNotification"]),
+    async logoutUser() {
+      await this.logout();
+      this.addNotification({
+        type: "success",
+        message: "Logged out successfully",
+      });
+      this.$router.push({ name: "home" });
+    },
   },
   data() {
     return {

@@ -6,7 +6,8 @@ const Api = axios.create({
 
 
 const ApiUsers = axios.create({
-  baseURL: "http://localhost:4001"
+  baseURL: "http://localhost:4001",
+  withCredentials: true
 })
 
 const ApiProducts = axios.create({

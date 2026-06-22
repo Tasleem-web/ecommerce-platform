@@ -5,6 +5,16 @@ import Unauthorized from './pages/Unauthorized.vue'
 
 export default [
   {
+    path: '/login',
+    name: 'Login',
+    component: () => import('./pages/Login.vue')
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: () => import('./pages/Register.vue')
+  },
+  {
     path: '/',
     name: 'home',
     component: Home

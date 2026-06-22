@@ -18,6 +18,10 @@ router.beforeEach((to, from, next) => {
     return next({ name: 'unauthorized' });
   }
 
+  if (isAuthenticated && (to.name === 'Login' || to.name === 'Register')) {
+    return next({ name: 'home' });
+  }
+
   next();
 })
 

@@ -1,30 +1,63 @@
 import User from "@/apis/User"
 
+const cookieName = 'currentUser'
+
+function setCookie(name, value, days) {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString()
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`
+}
+
+function getCookie(name) {
+    return document.cookie.split('; ').reduce((r, v) => {
+        const parts = v.split('=')
+        return parts[0] === name ? decodeURIComponent(parts[1]) : r
+    }, '')
+}
+
+function deleteCookie(name) {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`
+}
+
 export const authenticate = async ({ commit }, { email, password }) => {
-    const response = await User.login(email, password)
-    commit('LOGIN_SUCCESS', response.data);
-    // try {
+    console.log('Attempting to authenticate user:', { email, password });
+    const response = await User.login(email, password);
+    const authData = response.data || response;
+    const profile = authData.user || authData.profile || authData;
+    if (!profile || typeof profile !== 'object') {
+        throw new Error('Authentication returned invalid user payload')
+    }
 
-    //     dispatch("addAuthenticationNotification", {
-    //         type: "info",
-    //         message: `logging...`,
-    //         timeout: 3000
-    //     }, { root: true });
+    commit('SET_USER', profile)
+    setCookie(cookieName, JSON.stringify(profile), 7)
+    return profile
+}
 
-    //     await User.login(email, password);
-    //     commit('LOGIN_SUCCESS');
+export const loadUserFromCookie = ({ commit }) => {
+    const userJson = getCookie(cookieName)
+    if (!userJson || userJson === 'undefined' || userJson === 'null') {
+        deleteCookie(cookieName)
+        return
+    }
 
-    //     dispatch("successAuthenticationNotification", {
-    //         type: "success",
-    //         message: `User logged in successfully.`,
-    //         timeout: 3000
-    //     }, { root: true });
+    try {
+        const profile = JSON.parse(userJson)
+        if (profile && typeof profile === 'object') {
+            commit('SET_USER', profile)
+        } else {
+            deleteCookie(cookieName)
+        }
+    } catch (err) {
+        console.error('Failed to restore user from cookie', err)
+        deleteCookie(cookieName)
+    }
+}
 
-    // } catch (error) {
-    //     dispatch("failedAuthenticationNotification", {
-    //         type: "danger",
-    //         message: `User authentication failed`,
-    //         timeout: 3000
-    //     }, { root: true });
-    // }
+export const logout = async ({ commit }) => {
+    try {
+        await User.logout();
+    } catch (err) {
+        console.warn('Logout request failed, clearing local auth state anyway', err);
+    }
+    commit('SET_USER', null);
+    deleteCookie(cookieName);
 }
