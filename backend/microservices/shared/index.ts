@@ -4,6 +4,7 @@ export * from './errors';
 export * from './jwt';
 export * from './database';
 export * from './swagger';
+export * from './kafka';
 export * from './middleware/auth';
 export * from './middleware/error-handler';
 export * from './middleware/request-logger';

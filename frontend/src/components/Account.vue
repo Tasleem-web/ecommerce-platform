@@ -1,13 +1,17 @@
 <template>
   <!-- ================= ELEMENT: PROFILE DROPDOWN CARD ================= -->
-  <div class="card account-dropdown-card shadow p-3" @click.prevent>
+  <div class="card account-dropdown-card shadow p-3">
     <div class="text-center">
       <div
         class="text-muted small mb-3 text-truncate d-flex justify-content-between align-items-center"
-        v-if="currentUser"
       >
         <span class="text-dark">{{ currentUser.email }}</span>
-        <button type="button" class="btn-close fs-6 p-2" aria-label="Close"></button>
+        <button
+          type="button"
+          class="btn-close fs-6 p-2"
+          aria-label="Close"
+          @click="$emit('close')"
+        ></button>
       </div>
 
       <!-- User Avatar Segment -->
@@ -44,6 +48,7 @@ export default {
     ...mapActions("userModule", ["logout"]),
     ...mapActions(["addNotification"]),
     async logoutUser() {
+      this.$emit('close');
       await this.logout();
       this.addNotification({
         type: "success",
@@ -182,5 +187,9 @@ export default {
 .item-trailing-text {
   font-size: 12px;
   color: #444746;
+}
+
+.btn-close:focus {
+  box-shadow: none;
 }
 </style>

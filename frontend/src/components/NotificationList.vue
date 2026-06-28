@@ -30,6 +30,6 @@ export default {
   width: 320px;
 }
 .notification-list:not(:first-child) {
-  top: 70px;
+  bottom: 15px;
 }
 </style>

@@ -4,7 +4,8 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { Sequelize } from 'sequelize';
-import { buildLogger, createSequelize, errorHandler, notFoundHandler, requestLogger, setupSwagger } from '../../shared';
+import { buildLogger, createKafkaClient, createSequelize, errorHandler, notFoundHandler, requestLogger, setupSwagger } from '../../shared';
+import { sharedConfig } from '../../shared/config';
 import { profileConfig } from './config';
 import { initProfileModel } from './models/profile.model';
 import { ProfileService } from './services/profile.service';
@@ -22,6 +23,13 @@ export interface AppContext {
 
 
 export async function createApp(): Promise<AppContext> {
+    const kafkaClient = createKafkaClient({
+        clientId: sharedConfig.kafka.clientId,
+        brokers: sharedConfig.kafka.brokers.split(','),
+        topicPrefix: sharedConfig.kafka.topicPrefix,
+        groupId: sharedConfig.kafka.groupId,
+    });
+
     const sequelize = createSequelize(profileConfig.dbName, logger);
     initProfileModel(sequelize);
     await sequelize.authenticate();
@@ -29,6 +37,23 @@ export async function createApp(): Promise<AppContext> {
     logger.info('MySQL connected & models synced', { db: profileConfig.dbName });
 
     const service = new ProfileService();
+
+    void kafkaClient.connectConsumer(['user.registered'], async (message) => {
+        const event = message as { id?: number; email: string; name: string; roles?: string };
+        if (!event?.email || !event?.name) {
+            logger.warn('Skipping invalid user registration event', { message });
+            return;
+        }
+
+        try {
+            const profile = await service.createFromRegistration(event);
+            logger.info('Created profile from registration event', { email: profile.email, profileId: profile.id });
+        } catch (error) {
+            logger.warn('Failed to create profile from registration event', { error, message: event });
+        }
+    }).catch((error) => {
+        logger.warn('Kafka consumer failed to start', { error });
+    });
     const controller = new ProfileController(service);
 
     const app = express();

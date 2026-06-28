@@ -6,12 +6,14 @@ import path from 'path';
 import { Sequelize } from 'sequelize';
 import {
   buildLogger,
+  createKafkaClient,
   createSequelize,
   errorHandler,
   notFoundHandler,
   requestLogger,
   setupSwagger,
 } from '../../shared';
+import { sharedConfig } from '../../shared/config';
 import { productConfig } from './config';
 import { initProductModel } from './models/product.model';
 import { ProductController } from './controllers/product.controller';
@@ -26,13 +28,20 @@ export interface AppContext {
 }
 
 export async function createApp(): Promise<AppContext> {
+  const kafkaClient = createKafkaClient({
+    clientId: sharedConfig.kafka.clientId,
+    brokers: sharedConfig.kafka.brokers.split(','),
+    topicPrefix: sharedConfig.kafka.topicPrefix,
+    groupId: sharedConfig.kafka.groupId,
+  });
+
   const sequelize = createSequelize(productConfig.dbName, logger);
   initProductModel(sequelize);
   await sequelize.authenticate();
   await sequelize.sync();
   logger.info('MySQL connected & models synced', { db: productConfig.dbName });
 
-  const service = new ProductService();
+  const service = new ProductService(kafkaClient);
   const controller = new ProductController(service);
 
   const app = express();

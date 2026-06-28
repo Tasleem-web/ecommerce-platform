@@ -18,6 +18,12 @@ export interface SharedConfig {
     secret: string;
     expiresIn: string;
   };
+  kafka: {
+    brokers: string;
+    clientId: string;
+    topicPrefix: string;
+    groupId: string;
+  };
   mysql: {
     host: string;
     port: number;
@@ -37,5 +43,11 @@ export const sharedConfig: SharedConfig = {
     port: Number(process.env.MYSQL_PORT ?? 3306),
     user: process.env.MYSQL_USER ?? 'root',
     password: process.env.MYSQL_PASSWORD ?? '',
+  },
+  kafka: {
+    brokers: process.env.KAFKA_BROKERS ?? 'localhost:9092',
+    clientId: process.env.KAFKA_CLIENT_ID ?? 'ecommerce-user-service',
+    topicPrefix: process.env.KAFKA_TOPIC_PREFIX ?? 'ecommerce',
+    groupId: process.env.KAFKA_GROUP_ID ?? 'ecommerce-user-service-group',
   },
 };

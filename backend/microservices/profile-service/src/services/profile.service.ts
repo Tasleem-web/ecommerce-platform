@@ -6,6 +6,23 @@ const BCRYPT_ROUNDS = 10;
 
 export class ProfileService {
 
+    async createFromRegistration(event: { email: string; name: string; roles?: string; id?: number }) {
+        const existing = await Profile.findOne({ where: { email: event.email } });
+        if (existing) return existing;
+
+        const passwordHash = await bcrypt.hash(`external-${event.email}-${event.id ?? 'registration'}`, BCRYPT_ROUNDS);
+        const roleString = event.roles?.trim() || 'profile';
+
+        const profile = await Profile.create({
+            email: event.email,
+            passwordHash,
+            name: event.name,
+            roles: roleString,
+        });
+
+        return profile;
+    }
+
     async register(email: string, password: string, name: string, roles?: string | string[]) {
         // first check existing profile
         const existing = await Profile.findOne({ where: { email } });

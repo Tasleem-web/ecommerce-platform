@@ -12,16 +12,26 @@ declare global {
 }
 
 /**
- * Verifies `Authorization: Bearer <token>` and attaches `req.user`.
+ * Verifies a JWT from either the Authorization header or an auth token cookie and attaches `req.user`.
  */
 export function requireAuth(req: Request, _res: Response, next: NextFunction): void {
   console.log('requireAuth', req.headers);
+
   const header = req.headers.authorization;
-  if (!header?.startsWith('Bearer ')) {
+  const cookieToken = req.headers.cookie
+    ?.split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith('authToken='))
+    ?.split('=')[1];
+
+  const token = header?.startsWith('Bearer ') ? header.slice('Bearer '.length).trim() : decodeURIComponent(cookieToken || '');
+
+  if (!token) {
     return next(new UnauthorizedError('Missing or invalid Authorization header'));
   }
+
   try {
-    req.user = verifyJwt(header.slice('Bearer '.length).trim());
+    req.user = verifyJwt(token);
     next();
   } catch {
     next(new UnauthorizedError('Invalid or expired token'));

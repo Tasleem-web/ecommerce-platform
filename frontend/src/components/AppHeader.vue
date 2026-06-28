@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="position-sticky top-0 z-1">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-0">
       <div class="container">
         <div>
@@ -31,31 +31,43 @@
           </div>
         </div>
 
-        <div v-if="currentUser" class="dropdown" data-bs-auto-close="outside">
-          <div
-            class="profile-icon"
+        <div class="dropdown" data-bs-auto-close="outside">
+          <button
+            class="profile-icon dropdown-toggle btn btn-link text-white p-0 border-0"
             id="dropdownMenu2"
             data-bs-toggle="dropdown"
             aria-expanded="false"
+            type="button"
           >
             <img
               :src="
-                currentUser.image ||
+                currentUser?.image ||
                 'https://res.cloudinary.com/tasleem/image/upload/v1782056301/male_user_icon_voqiwc.png'
               "
               class="rounded-circle"
               alt="Profile"
             />
-          </div>
+          </button>
           <div
-            class="dropdown-menu dropdown-menu-end p-0"
+            class="dropdown-menu dropdown-menu-end"
             aria-labelledby="dropdownMenu2"
             @click.stop
           >
-            <Account :currentUser="currentUser" />
+            <Account
+              :currentUser="currentUser"
+              @close="closeDropdown"
+              v-if="currentUser"
+            />
+            <template v-else>
+              <router-link class="dropdown-item" :to="{ name: 'Login' }" @click="closeDropdown"
+                >Login</router-link
+              >
+              <router-link class="dropdown-item" :to="{ name: 'Register' }" @click="closeDropdown">
+                Register
+              </router-link>
+            </template>
           </div>
         </div>
-        <router-link v-else class="nav-link" :to="{ name: 'Login' }"> Login </router-link>
       </div>
 
       <!-- <div class="dropdown">
@@ -102,6 +114,12 @@ export default {
       });
       this.$router.push({ name: "home" });
     },
+    closeDropdown() {
+      const dropdownButton = document.getElementById("dropdownMenu2");
+      if (dropdownButton) {
+        dropdownButton.click();
+      }
+    },
   },
   data() {
     return {
@@ -139,9 +157,9 @@ export default {
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  border: 1px solid;
-  background-color: #fff;
+  border: 1px solid #fff;
   cursor: pointer;
+  color: #fff;
   img {
     width: 100%;
     height: 100%;

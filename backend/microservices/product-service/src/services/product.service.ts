@@ -1,4 +1,4 @@
-import { NotFoundError } from '../../../shared';
+import { KafkaClient, NotFoundError } from '../../../shared';
 import { Product } from '../models/product.model';
 
 export interface CreateProductInput {
@@ -17,6 +17,8 @@ export interface CreateProductInput {
 export type UpdateProductInput = Partial<CreateProductInput>;
 
 export class ProductService {
+  constructor(private readonly kafkaClient?: KafkaClient) {}
+
   async list(limit = 50, offset = 0) {
     const { rows, count } = await Product.findAndCountAll({
       order: [['createdAt', 'DESC']],
@@ -33,7 +35,7 @@ export class ProductService {
   }
 
   async create(input: CreateProductInput) {
-    return Product.create({
+    const product = await Product.create({
       title: input.title,
       category: input.category,
       image: input.image,
@@ -42,6 +44,22 @@ export class ProductService {
       stock: input.stock ?? 0,
       rating: input.rating ?? { rate: 0, count: 0 },
     });
+
+    if (this.kafkaClient) {
+      try {
+        await this.kafkaClient.publish('product.created', {
+          id: product.id,
+          title: product.title,
+          category: product.category,
+          price: product.price,
+          createdAt: product.createdAt,
+        });
+      } catch (error) {
+        console.warn('Kafka publish failed for product creation:', error);
+      }
+    }
+
+    return product;
   }
 
   async update(id: number, input: UpdateProductInput) {
