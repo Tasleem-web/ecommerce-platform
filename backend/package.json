@@ -7,7 +7,8 @@
         "dev:product-service": "cross-env DOTENV_CONFIG_PATH=./config/.env.development nodemon --watch microservices --ext ts --exec \"ts-node ./microservices/product-service/src/index.ts\"",
         "dev:profile-service": "cross-env DOTENV_CONFIG_PATH=./config/.env.development nodemon --watch microservices --ext ts --exec \"ts-node ./microservices/profile-service/src/index.ts\"",
         "dev:cart-service": "cross-env DOTENV_CONFIG_PATH=./config/.env.development nodemon --watch microservices --ext ts --exec \"ts-node ./microservices/cart-service/src/index.ts\"",
-        "dev:microservices": "concurrently -n user,product,cart -c blue,green,yellow \"npm:dev:user-service\" \"npm:dev:product-service\" \"npm:dev:cart-service\"",
+        "dev:wishlist-service": "cross-env DOTENV_CONFIG_PATH=./config/.env.development nodemon --watch microservices --ext ts --ext ts --exec \"ts-node ./microservices/wishlist-service/src/index.ts\"",
+        "dev:microservices": "concurrently -n user,product,cart,wishlist -c blue,green,yellow,magenta \"npm:dev:user-service\" \"npm:dev:product-service\" \"npm:dev:cart-service\" \"npm:dev:wishlist-service\"",
         "lint": "eslint .",
         "format": "prettier --write .",
         "type-check": "tsc -b --noEmit"

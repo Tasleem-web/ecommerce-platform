@@ -7,6 +7,7 @@ import * as actions from './actions';
 import productModule from "./modules/product";
 import cartModule from "./modules/cart";
 import userModule from "./modules/user";
+import wishlistModule from "./modules/wishlist";
 
 export default createStore({
   state,
@@ -17,6 +18,7 @@ export default createStore({
   modules: {
     productModule,
     cartModule,
-    userModule
+    userModule,
+    wishlistModule
   }
 })

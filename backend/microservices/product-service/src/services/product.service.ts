@@ -17,15 +17,34 @@ export interface productInput {
 export type UpdateProductInput = Partial<productInput>;
 
 export class ProductService {
-  constructor(private readonly kafkaClient?: KafkaClient) {}
+  constructor(
+    private readonly kafkaClient?: KafkaClient,
+    private readonly WishlistModel?: any,
+  ) {}
 
-  async list(limit = 50, offset = 0) {
+  async list(limit = 50, offset = 0, userId?: string) {
     const { rows, count } = await Product.findAndCountAll({
       order: [['createdAt', 'DESC']],
       limit,
       offset,
     });
-    return { items: rows, total: count };
+
+    let wishlistedProductIds: number[] = [];
+    if (userId && this.WishlistModel) {
+      const wishlists = await this.WishlistModel.findAll({
+        where: { userId },
+        attributes: ['productId'],
+      });
+      wishlistedProductIds = wishlists.map((w: any) => w.productId);
+    }
+
+    const items = rows.map((product) => {
+      const plain: any = product.get({ plain: true });
+      plain.isWishlisted = wishlistedProductIds.includes(plain.id);
+      return plain;
+    });
+
+    return { items, total: count };
   }
 
   async getById(id: number) {

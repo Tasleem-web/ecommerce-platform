@@ -45,9 +45,12 @@ export class UserService {
     if (!ok) throw new UnauthorizedError('Invalid credentials');
 
     const token = signJwt({
-      sub: String(user.id),
+      id: String(user.id),
       email: user.email,
+      name: user.name,
       roles: user.roles.split(','),
+      image: user.image ?? '',
+      gender: user.gender ?? '',
     });
     return { token, user: this.toDto(user) };
   }

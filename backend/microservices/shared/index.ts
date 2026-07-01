@@ -6,5 +6,6 @@ export * from './database';
 export * from './swagger';
 export * from './kafka';
 export * from './middleware/auth';
+export * from './middleware/optionalAuth';
 export * from './middleware/error-handler';
 export * from './middleware/request-logger';

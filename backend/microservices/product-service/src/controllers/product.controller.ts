@@ -10,7 +10,8 @@ export class ProductController {
     try {
       const limit = Math.min(Number(req.query.limit ?? 50), 200);
       const offset = Math.max(Number(req.query.offset ?? 0), 0);
-      res.json(await this.service.list(limit, offset));
+      const userId = (req as any).user?.id;
+      res.json(await this.service.list(limit, offset, userId));
     } catch (err) {
       next(err);
     }

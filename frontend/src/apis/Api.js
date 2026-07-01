@@ -30,6 +30,23 @@ const attachAuthInterceptor = (apiInstance) => {
   });
 };
 
+// Track if session expired modal is already shown to avoid duplicates
+let sessionExpiredFired = false;
+
+const attachResponseInterceptor = (apiInstance) => {
+  apiInstance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response && error.response.status === 401 && !sessionExpiredFired) {
+        sessionExpiredFired = true;
+        // Dispatch custom event for the App component to catch
+        window.dispatchEvent(new CustomEvent('session-expired'));
+      }
+      return Promise.reject(error);
+    }
+  );
+};
+
 const Api = axios.create({
   baseURL: "http://localhost:3000"
 });
@@ -47,7 +64,7 @@ const ApiCart = axios.create({
   baseURL: "http://localhost:4003"
 });
 
-const ApiProfiles = axios.create({
+const ApiWishlist = axios.create({
   baseURL: "http://localhost:4004"
 });
 
@@ -55,6 +72,12 @@ attachAuthInterceptor(Api);
 attachAuthInterceptor(ApiUsers);
 attachAuthInterceptor(ApiProducts);
 attachAuthInterceptor(ApiCart);
-attachAuthInterceptor(ApiProfiles);
+attachAuthInterceptor(ApiWishlist);
 
-export { Api, ApiProducts, ApiUsers, ApiCart, ApiProfiles };
+attachResponseInterceptor(Api);
+attachResponseInterceptor(ApiUsers);
+attachResponseInterceptor(ApiProducts);
+attachResponseInterceptor(ApiCart);
+attachResponseInterceptor(ApiWishlist);
+
+export { Api, ApiProducts, ApiUsers, ApiCart, ApiWishlist };

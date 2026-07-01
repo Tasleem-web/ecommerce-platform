@@ -7,7 +7,7 @@ export class CartService {
     private readonly kafkaClient: KafkaClient
   ) { }
 
-  async list() {
-    return await Cart.findAll();
+  async list(userId: string) {
+    return await Cart.findAll({ where: { userId } });
   }
 }

@@ -102,7 +102,7 @@ export class UserController {
   me = async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (!req.user) throw new UnauthorizedError();
-      const user = await this.service.findById(Number(req.user.sub));
+      const user = await this.service.findById(Number(req.user.id));
       if (!user) throw new NotFoundError('User not found');
       res.json(this.service.toDto(user));
     } catch (err) {

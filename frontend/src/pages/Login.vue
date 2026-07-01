@@ -103,8 +103,8 @@ export default {
   data() {
     return {
       formData: {
-        email: "",
-        password: "",
+        email: "tasleem+admin@mail.com",
+        password: "123456789",
         rememberMe: false,
       },
       touched: {

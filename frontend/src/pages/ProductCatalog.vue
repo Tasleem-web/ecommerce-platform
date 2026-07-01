@@ -96,7 +96,10 @@
               <font-awesome-icon
                 icon="heart"
                 @click="toggleWishlist(product)"
-                :class="['wishlist position-absolute', { 'text-danger': isInWishlist(product) } ]"
+                :class="[
+                  'wishlist position-absolute',
+                  { 'text-danger': isInWishlist(product) },
+                ]"
               />
             </div>
 
@@ -281,7 +284,6 @@ export default {
         stock: "all",
       },
       productToDelete: null,
-      wishlist: [],
     };
   },
   computed: {
@@ -357,6 +359,10 @@ export default {
   },
   methods: {
     ...mapActions("productModule", ["fetchProducts", "deleteProduct"]),
+    ...mapActions("wishlistModule", [
+      "addToWishlist",
+      "removeFromWishlist",
+    ]),
     formatCategory(value) {
       if (typeof value !== "string") return "";
       return value
@@ -368,16 +374,18 @@ export default {
       this.$router.push({ path: `/product/edit/${product.id}` });
     },
     toggleWishlist(product) {
-      const index = this.wishlist.findIndex((item) => item.id === product.id);
-      if (index === -1) {
-        this.wishlist.push(product);
+      const productId = product.id;
+      const isWishlisted = product.isWishlisted;
+      if (isWishlisted) {
+        this.removeFromWishlist({ productId, title: product.title });
+        product.isWishlisted = false;
       } else {
-        this.wishlist.splice(index, 1);
+        this.addToWishlist(product);
+        product.isWishlisted = true;
       }
-      console.log("Wishlist:", this.wishlist);
     },
     isInWishlist(product) {
-      return this.wishlist.some((item) => item.id === product.id);
+      return product.isWishlisted === true;
     },
     loadMore() {
       this.visibleCount += this.itemsPerPage;

@@ -19,7 +19,7 @@
           <!-- Remove Button Cross Overlay -->
           <button
             class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 rounded-circle border shadow-sm"
-            @click="removeItem(item.id)"
+            @click="removeItem(item.productId, item.title)"
             title="Remove from Wishlist"
             style="width: 32px; height: 32px; line-height: 1"
           >
@@ -75,52 +75,41 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+
 export default {
   name: "WishlistComponent",
-  data() {
-    return {
-      // Data format mirrors your storage objects exactly
-      wishlistItems: [
-        {
-          id: 501,
-          userId: 3,
-          productId: 12,
-          title: "John Hardy Women's Chain Bracelet",
-          category: "jewelry",
-          image: "https://fakestoreapi.com",
-          price: 695.0,
-        },
-        {
-          id: 502,
-          userId: 3,
-          productId: 3,
-          title: "Mens Cotton Jacket - Dynamic Outdoor Sizing Utility Wear",
-          category: "men's clothing",
-          image: "https://fakestoreapi.com",
-          price: 55.99,
-        },
-      ],
-    };
+  computed: {
+    ...mapState("wishlistModule", {
+      wishlistItems: (state) => state.wishlist,
+    }),
   },
   methods: {
-    // Delete line item mapping unique identifier keys
-    removeItem(id) {
-      this.wishlistItems = this.wishlistItems.filter((item) => item.id !== id);
-      // Vuex dispatch mapping suggestion: this.$store.dispatch('wishlist/remove', id);
+    ...mapActions("wishlistModule", ["removeFromWishlist", "fetchWishlist"]),
+    ...mapActions("cartModule", ["addProductToCart"]),
+
+    removeItem(productId, title) {
+      this.removeFromWishlist({ productId, title });
     },
-    // Pass object data package over to Cart Module
     moveToCart(item) {
-      alert(`Moving item ${item.productId} over to Cart array queue...`);
-
-      // Step A: Trigger your Cart module actions logic payload:
-      // this.$store.dispatch('cart/addProductToCart', { product: item, quantity: 1 });
-
-      // Step B: Erase from this list array
-      this.removeItem(item.id);
+      this.addProductToCart({
+        product: {
+          id: item.productId,
+          title: item.title,
+          category: item.category,
+          image: item.image,
+          price: item.price,
+        },
+        quantity: 1,
+      });
+      this.removeItem(item.productId, item.title);
     },
     exploreProducts() {
-      alert("Redirecting back to products catalogs listing route space...");
+      this.$router.push("/catalog");
     },
+  },
+  mounted() {
+    this.fetchWishlist();
   },
 };
 </script>

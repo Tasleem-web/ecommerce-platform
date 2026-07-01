@@ -1,0 +1,70 @@
+{
+  "$schema": "https://schema.vscode.dev/schemas/tasks.json",
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run User Service",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev:user-service"],
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Product Service",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev:product-service"],
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Cart Service",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev:cart-service"],
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Wishlist Service",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev:wishlist-service"],
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

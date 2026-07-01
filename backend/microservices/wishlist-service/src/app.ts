@@ -14,14 +14,13 @@ import {
   setupSwagger,
 } from '../../shared';
 import { sharedConfig } from '../../shared/config';
-import { productConfig } from './config';
-import { Product, initProductModel } from './models/product.model';
-import { ProductWishlist, initProductWishlistModel } from './models/wishlist.model';
-import { ProductController } from './controllers/product.controller';
-import { ProductService } from './services/product.service';
-import { productRouter } from './routes/product.routes';
+import { wishlistConfig } from './config';
+import { initWishlistModel } from './models/wishlist.model';
+import { WishlistController } from './controllers/wishlist.controller';
+import { WishlistService } from './services/wishlist.service';
+import { wishlistRouter } from './routes/wishlist.route';
 
-export const logger = buildLogger(productConfig.serviceName);
+export const logger = buildLogger(wishlistConfig.serviceName);
 
 export interface AppContext {
   app: Express;
@@ -36,25 +35,14 @@ export async function createApp(): Promise<AppContext> {
     groupId: sharedConfig.kafka.groupId,
   });
 
-  const sequelize = createSequelize(productConfig.dbName, logger);
-  initProductModel(sequelize);
+  const sequelize = createSequelize(wishlistConfig.dbName, logger);
+  initWishlistModel(sequelize);
   await sequelize.authenticate();
   await sequelize.sync();
-  logger.info('MySQL connected & models synced', { db: productConfig.dbName });
+  logger.info('MySQL connected & models synced', { db: wishlistConfig.dbName });
 
-  // Second connection to wishlists_db for the cross-database association
-  const wishlistSequelize = createSequelize('wishlists_db', logger);
-  initProductWishlistModel(wishlistSequelize);
-  await wishlistSequelize.authenticate();
-  await wishlistSequelize.sync();
-  logger.info('Wishlist DB connected for product-service');
-
-  // Association: Product has many ProductWishlist items
-  Product.hasMany(ProductWishlist, { foreignKey: 'productId', as: 'wishlists' });
-  ProductWishlist.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
-
-  const service = new ProductService(kafkaClient, ProductWishlist);
-  const controller = new ProductController(service);
+  const service = new WishlistService(kafkaClient);
+  const controller = new WishlistController(service);
 
   const app = express();
   app.disable('x-powered-by');
@@ -66,7 +54,7 @@ export async function createApp(): Promise<AppContext> {
 
   app.get('/health', async (_req: Request, res: Response) => {
     const result = {
-      service: productConfig.serviceName,
+      service: wishlistConfig.serviceName,
       status: 'ok' as 'ok' | 'degraded',
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
@@ -86,17 +74,17 @@ export async function createApp(): Promise<AppContext> {
   });
 
   setupSwagger(app, {
-    title: 'Product Service API',
-    description: 'Product catalog endpoints (JWT issued by user-service)',
+    title: 'Wishlist Service API',
+    description: 'Wishlist management endpoints (JWT issued by user-service)',
     apis: [path.join(__dirname, 'docs')],
-    serverUrl: `http://localhost:${productConfig.port}`,
+    serverUrl: `http://localhost:${wishlistConfig.port}`,
   });
 
   app.get('/', (_req: Request, res: Response) => {
-    res.json({ message: 'Welcome to the Product Service API' });
+    res.json({ message: 'Welcome to the Wishlist Service API' });
   });
 
-  app.use('/products', productRouter(controller));
+  app.use('/wishlist', wishlistRouter(controller));
 
   app.use(notFoundHandler);
   app.use(errorHandler(logger));

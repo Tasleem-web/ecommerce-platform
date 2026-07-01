@@ -1,0 +1,148 @@
+openapi: 3.0.0
+info:
+  title: Wishlist Service API
+  version: 1.0.0
+  description: API for managing wishlist items. JWT required for protected endpoints.
+servers:
+  - url: http://localhost:4005
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    WishlistItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 501
+        userId:
+          type: string
+          example: "user_abc_123"
+        productId:
+          type: integer
+          example: 12
+        title:
+          type: string
+          example: "John Hardy Women's Chain Bracelet"
+        category:
+          type: string
+          example: "jewelry"
+        image:
+          type: string
+          format: uri
+          example: "https://.../image.jpg"
+        price:
+          type: number
+          format: double
+          example: 695.00
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    WishlistItemInput:
+      type: object
+      required: [productId]
+      properties:
+        productId:
+          type: integer
+          example: 12
+        title:
+          type: string
+          example: "John Hardy Women's Chain Bracelet"
+        category:
+          type: string
+          example: "jewelry"
+        image:
+          type: string
+          format: uri
+        price:
+          type: number
+          format: double
+          example: 695.00
+
+    WishlistCheckResponse:
+      type: object
+      properties:
+        isWishlisted:
+          type: boolean
+          example: true
+
+paths:
+  /wishlists:
+    get:
+      summary: List wishlist items for authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Wishlist items list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WishlistItem'
+
+    post:
+      summary: Add item to wishlist
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WishlistItemInput'
+      responses:
+        '201':
+          description: Created wishlist item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WishlistItem'
+        '400':
+          description: Invalid input
+
+  /wishlists/{productId}:
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: integer
+    delete:
+      summary: Remove item from wishlist
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Item removed from wishlist
+        '404':
+          description: Item not found in wishlist
+
+  /wishlists/{productId}/check:
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Check if a product is in the user's wishlist
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Wishlist check result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WishlistCheckResponse'
