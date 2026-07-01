@@ -8,3 +8,7 @@ export const PUSH_NOTIFICATION = (state, notification) => {
 export const REMOVE_NOTIFICATION = (state, notificationData) => {
   state.notifications = state.notifications.filter(notification => notification.id !== notificationData.id)
 }
+
+export const SET_CURRENT_USER = (state, user) => {
+  state.currentUser = user;
+}

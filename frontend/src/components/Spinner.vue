@@ -1,6 +1,8 @@
 <template>
-  <div class="spinner-border spinner-loader" role="status">
-    <span class="visually-hidden">Loading...</span>
+  <div class="spinner-container">
+    <div class="spinner-border spinner-loader" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
   </div>
 </template>
 
@@ -12,10 +14,6 @@ export default {
 
 <style scoped>
 .spinner-loader {
-  width: 3rem;
-  height: 3rem;
-  top: 50%;
-  left: 50%;
-  position: fixed;
+  position: absolute;
 }
 </style>

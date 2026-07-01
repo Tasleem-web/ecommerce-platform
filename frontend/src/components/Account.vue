@@ -67,6 +67,7 @@ export default {
   max-width: 280px;
   background-color: #f8fafd;
   border: none;
+  z-index: 10;
 }
 
 /* ==================== PROFILE AVATAR BLOCK ==================== */

@@ -1,8 +1,8 @@
 <template>
   <div class="position-sticky top-0 z-1">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-0">
-      <div class="container">
-        <div>
+      <div class="container d-flex align-items-center">
+        <div class="flex-grow-1">
           <button
             class="navbar-toggler"
             type="button"
@@ -19,19 +19,49 @@
               <router-link
                 class="nav-link"
                 v-for="(navbar, index) in navbarItems"
-                :key="index"
+                :key="`left-${index}`"
                 :to="navbar.path"
               >
                 {{ navbar.name }}
               </router-link>
-              <router-link v-if="isAdmin" class="nav-link" :to="{ name: 'admin' }">
-                Admin
-              </router-link>
+
+              <template v-if="isAdmin">
+                <router-link
+                  class="nav-link"
+                  v-for="(navbar, index) in protectedRoutes"
+                  :key="`protected-${index}`"
+                  :to="navbar.path"
+                >
+                  {{ navbar.name }}
+                </router-link>
+              </template>
+            </div>
+
+            <div class="navbar-nav ms-auto px-2">
+              <div
+                class="dropdown hover-dropdown"
+                v-for="(navbar, index) in rightSideMenuItems"
+                :key="`right-${index}`"
+              >
+                <!-- Removed data-bs-toggle and added a native click event -->
+                <button
+                  class="nav-link"
+                  :id="`dropdownMenuButton-${index}`"
+                  @click="navigateTo(navbar.path)"
+                >
+                  <font-awesome-icon :icon="navbar.icon" class="edit-icon" />
+                  {{ navbar.name }}
+                  <span class="badge bg-danger text-white">2</span>
+
+                  <!-- The MiniCart will act as the dropdown menu -->
+                  <MiniCart v-if="navbar.name === 'Cart'" class="dropdown-menu" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="dropdown" data-bs-auto-close="outside">
+        <div class="dropdown ms-auto" data-bs-auto-close="outside">
           <button
             class="profile-icon dropdown-toggle btn btn-link text-white p-0 border-0"
             id="dropdownMenu2"
@@ -59,42 +89,36 @@
               v-if="currentUser"
             />
             <template v-else>
-              <router-link class="dropdown-item" :to="{ name: 'Login' }" @click="closeDropdown"
+              <router-link
+                class="dropdown-item"
+                :to="{ name: 'Login' }"
+                @click="closeDropdown"
                 >Login</router-link
               >
-              <router-link class="dropdown-item" :to="{ name: 'Register' }" @click="closeDropdown">
+              <router-link
+                class="dropdown-item"
+                :to="{ name: 'Register' }"
+                @click="closeDropdown"
+              >
                 Register
               </router-link>
             </template>
           </div>
         </div>
       </div>
-
-      <!-- <div class="dropdown">
-          <button
-            class="btn btn-secondary dropdown-toggle"
-            type="button"
-            id="dropdownMenuButton1"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            {{ cartCounts }} Cart
-          </button>
-          <MiniCart />
-        </div> -->
     </nav>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-// import MiniCart from "./MiniCart.vue";
+import MiniCart from "./MiniCart.vue";
 import Account from "./Account.vue";
 
 export default {
   name: "AppHeader",
   components: {
-    // MiniCart,
+    MiniCart,
     Account,
   },
   computed: {
@@ -120,6 +144,9 @@ export default {
         dropdownButton.click();
       }
     },
+    navigateTo(path) {
+      this.$router.push(path);
+    },
   },
   data() {
     return {
@@ -128,10 +155,29 @@ export default {
           name: "Home",
           path: "/",
         },
-        // {
-        //   name: "Product",
-        //   path: "product",
-        // },
+      ],
+
+      protectedRoutes: [
+        {
+          name: "admin",
+          path: "/admin",
+        },
+        {
+          name: "Products",
+          path: "/products",
+        },
+      ],
+      rightSideMenuItems: [
+        {
+          name: "Wishlist",
+          icon: "heart",
+          path: "/wishlist",
+        },
+        {
+          name: "Cart",
+          icon: "cart-arrow-down",
+          path: "/cart",
+        },
       ],
     };
   },
@@ -166,5 +212,19 @@ export default {
     object-fit: cover;
     border-radius: 50%;
   }
+}
+/* Triggers the dropdown visibility on hover */
+.hover-dropdown:hover .dropdown-menu {
+  display: block;
+  margin-top: 0; /* Aligns the menu cleanly under the button */
+  right: 0; /* Ensures the menu aligns to the right edge of the button */
+  left: auto; /* Overrides any default left alignment */
+  top: 2.8rem;
+}
+
+/* Optional: Ensures the dropdown doesn't instantly snap shut if the cursor gaps */
+.dropdown-menu {
+  display: none;
+  position: absolute;
 }
 </style>

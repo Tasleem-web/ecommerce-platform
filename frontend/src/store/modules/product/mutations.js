@@ -1,10 +1,23 @@
-export const SET_PRODUCTS = (state, products) => {
-  state.products.items = products.items;
-  state.products.total = products.total;
-}
+const normalizeProduct = (product) => ({
+  ...product,
+  price: Number(product.price) || 0,
+  stock: Number(product.stock) || 0,
+  rating: {
+    rate: Number(product.rating?.rate) || 0,
+    count: Number(product.rating?.count) || 0,
+  },
+});
+
+export const SET_PRODUCTS = (state, products = {}) => {
+  const items = Array.isArray(products) ? products : products.items || [];
+  const normalizedItems = items.map(normalizeProduct);
+  const total = typeof products.total === "number" ? products.total : normalizedItems.length;
+
+  state.products.items = normalizedItems;
+  state.products.total = total;
+};
 
 export const GET_PRODUCT = (state, product) => {
-  console.log(product)
   state.product = product;
 }
 

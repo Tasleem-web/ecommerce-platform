@@ -1,0 +1,205 @@
+ 
+openapi: 3.0.0
+info:
+  title: Cart Service API
+  version: 1.0.0
+  description: API for managing shopping cart items. JWT required for protected endpoints.
+servers:
+  - url: http://localhost:4003
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CartItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 12
+        userId:
+          type: string
+          example: "user_abc_123"
+        productId:
+          type: integer
+          example: 7
+        title:
+          type: string
+          example: "Sleek T-Shirt"
+        category:
+          type: string
+          example: "clothing"
+        image:
+          type: string
+          format: uri
+          example: "https://.../image.jpg"
+        price:
+          type: number
+          format: double
+          example: 19.99
+        quantity:
+          type: integer
+          example: 2
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CartItemInput:
+      type: object
+      required: [userId, productId]
+      properties:
+        userId:
+          type: string
+          example: "user_abc_123"
+        productId:
+          type: integer
+          example: 7
+        title:
+          type: string
+        category:
+          type: string
+        image:
+          type: string
+          format: uri
+        price:
+          type: number
+          format: double
+        quantity:
+          type: integer
+          minimum: 1
+          default: 1
+
+    CartList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        total:
+          type: integer
+
+paths:
+  /carts:
+    get:
+      summary: List cart items
+      description: Returns cart items. When `userId` query is provided, returns items for that user.
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          description: Filter cart items by user id
+      responses:
+        '200':
+          description: Cart list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartList'
+
+    post:
+      summary: Add item to cart
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItemInput'
+      responses:
+        '201':
+          description: Created cart item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItem'
+        '400':
+          description: Invalid input
+
+  /carts/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get cart item by id
+      responses:
+        '200':
+          description: Cart item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItem'
+        '404':
+          description: Not found
+
+    put:
+      summary: Update cart item (e.g., quantity)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  minimum: 1
+      responses:
+        '200':
+          description: Updated cart item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItem'
+        '404':
+          description: Not found
+
+    delete:
+      summary: Remove cart item
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          description: Not found
+
+  /carts/user/{userId}:
+    parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get all cart items for a user
+      responses:
+        '200':
+          description: Cart list for user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartList'
+
+    delete:
+      summary: Clear cart for a user
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Cart cleared
+

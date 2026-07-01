@@ -23,13 +23,13 @@ export default {
     }),
   },
   mounted() {
-    this.getProducts();
+    this.fetchProducts();
   },
   methods: {
     ...mapActions({
-      getProducts: "productModule/getProducts",
+      fetchProducts: "productModule/fetchProducts",
     }),
-    // ...mapActions("productModule", ["getProducts"]),
+    // ...mapActions("productModule", ["fetchProducts"]),
   },
 };
 </script>

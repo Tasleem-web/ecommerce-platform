@@ -1,7 +1,7 @@
 import { KafkaClient, NotFoundError } from '../../../shared';
 import { Product } from '../models/product.model';
 
-export interface CreateProductInput {
+export interface productInput {
   title: string;
   category: string;
   image: string;
@@ -14,7 +14,7 @@ export interface CreateProductInput {
   };
 }
 
-export type UpdateProductInput = Partial<CreateProductInput>;
+export type UpdateProductInput = Partial<productInput>;
 
 export class ProductService {
   constructor(private readonly kafkaClient?: KafkaClient) {}
@@ -34,7 +34,7 @@ export class ProductService {
     return product;
   }
 
-  async create(input: CreateProductInput) {
+  async create(input: productInput) {
     const product = await Product.create({
       title: input.title,
       category: input.category,

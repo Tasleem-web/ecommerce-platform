@@ -41,30 +41,30 @@
   </div>
 </template>
 
-<script>
-import { mapGetters, mapState, mapActions } from "vuex";
-export default {
-  name: "MiniCart",
-  computed: {
-    ...mapState("cartModule", ["cart"]),
-    // ...mapState({
-    //   cart: (state) => state.cartModule.cart,
-    // }),
-    ...mapGetters("cartModule", ["cartTotalPrice"]),
-  },
-  methods: {
-    ...mapActions({
-      getCartItems: "cartModule/getCartItems",
-      clearCartItems: "cartModule/clearCartItems",
-      removeItemFromCart: "cartModule/removeItemFromCart",
-    }),
-    // ...mapActions(["getCartItems", "clearCartItems", "removeItemFromCart"]),
-  },
-  mounted() {
-    this.getCartItems();
-  },
-};
-</script>
+// <script>
+// import { mapGetters, mapState, mapActions } from "vuex";
+// export default {
+//   name: "MiniCart",
+//   computed: {
+//     ...mapState("cartModule", ["cart"]),
+//     // ...mapState({
+//     //   cart: (state) => state.cartModule.cart,
+//     // }),
+//     ...mapGetters("cartModule", ["cartTotalPrice"]),
+//   },
+//   methods: {
+//     ...mapActions({
+//       getCartItems: "cartModule/getCartItems",
+//       clearCartItems: "cartModule/clearCartItems",
+//       removeItemFromCart: "cartModule/removeItemFromCart",
+//     }),
+//     // ...mapActions(["getCartItems", "clearCartItems", "removeItemFromCart"]),
+//   },
+//   mounted() {
+//     this.getCartItems();
+//   },
+// };
+// </script>
 
 <style scoped>
 .dropdown-menu {

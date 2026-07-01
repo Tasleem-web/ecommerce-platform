@@ -1,14 +1,17 @@
 import Product from "@/apis/Product";
 
-export const getProducts = ({ commit }) => {
-  Product.all().then(response => {
-    commit("SET_PRODUCTS", response.data)
-  })
-}
+export const fetchProducts = ({ commit }) => {
+  return Product.all().then((response) => {
+    const payload = response?.data || { items: [], total: 0 };
+    commit("SET_PRODUCTS", payload);
+  });
+};
 
 export const getProduct = async ({ commit }, productId) => {
   const response = await Product.find(productId);
-  commit("GET_PRODUCT", response.data);
+  const product = response.data;
+  commit("GET_PRODUCT", product);
+  return product;
 }
 
 export const createProduct = async ({ commit }, productData) => {

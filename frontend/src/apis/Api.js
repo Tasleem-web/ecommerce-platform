@@ -21,6 +21,9 @@ const attachAuthInterceptor = (apiInstance) => {
       config.headers = {
         ...config.headers,
         Authorization: `Bearer ${token}`,
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
       };
     }
     return config;
@@ -40,13 +43,18 @@ const ApiProducts = axios.create({
   baseURL: "http://localhost:4002"
 });
 
-const ApiProfiles = axios.create({
+const ApiCart = axios.create({
   baseURL: "http://localhost:4003"
+});
+
+const ApiProfiles = axios.create({
+  baseURL: "http://localhost:4004"
 });
 
 attachAuthInterceptor(Api);
 attachAuthInterceptor(ApiUsers);
 attachAuthInterceptor(ApiProducts);
+attachAuthInterceptor(ApiCart);
 attachAuthInterceptor(ApiProfiles);
 
-export { Api, ApiProducts, ApiUsers, ApiProfiles };
+export { Api, ApiProducts, ApiUsers, ApiCart, ApiProfiles };

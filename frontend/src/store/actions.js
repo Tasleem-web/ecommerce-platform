@@ -5,3 +5,7 @@ export const addNotification = ({ commit }, notification) => {
 export const removeNotification = ({ commit }, notification) => {
   commit("REMOVE_NOTIFICATION", notification);
 }
+
+export const setCurrentUser = ({ commit }, user) => {
+  commit("SET_CURRENT_USER", user);
+}

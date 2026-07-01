@@ -32,18 +32,18 @@ function clearToken() {
 }
 
 export const authenticate = async ({ commit }, { email, password }) => {
-    console.log('Attempting to authenticate user:', { email, password });
     const response = await User.login(email, password);
     const authData = response.data || response;
-    const profile = authData.user || authData.profile || authData;
-    if (!profile || typeof profile !== 'object') {
+    const user = authData.user || authData;
+    if (!user || typeof user !== 'object') {
         throw new Error('Authentication returned invalid user payload')
     }
 
-    commit('SET_USER', profile)
-    setCookie(cookieName, JSON.stringify(profile), 7)
+    commit('SET_USER', user)
+    commit('SET_CURRENT_USER', user, { root: true })
+    setCookie(cookieName, JSON.stringify(user), 7)
     storeToken(authData.token)
-    return profile
+    return user
 }
 
 export const loadUserFromCookie = ({ commit }) => {
@@ -54,9 +54,10 @@ export const loadUserFromCookie = ({ commit }) => {
     }
 
     try {
-        const profile = JSON.parse(userJson)
-        if (profile && typeof profile === 'object') {
-            commit('SET_USER', profile)
+        const user = JSON.parse(userJson)
+        if (user && typeof user === 'object') {
+            commit('SET_USER', user)
+            commit('SET_CURRENT_USER', user, { root: true })
         } else {
             deleteCookie(cookieName)
         }
@@ -73,6 +74,7 @@ export const logout = async ({ commit }) => {
         console.warn('Logout request failed, clearing local auth state anyway', err);
     }
     commit('SET_USER', null);
+    commit('SET_CURRENT_USER', null, { root: true })
     deleteCookie(cookieName);
     clearToken();
 }
