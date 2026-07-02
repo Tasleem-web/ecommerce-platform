@@ -6,9 +6,24 @@
 </template>
 
 <script>
+import { mapActions, mapState } from "vuex";
+
 export default {
   name: "HomeComponent",
   components: {},
+  computed: {
+    ...mapState("wishlistModule", {
+      wishlistItems: (state) => state.wishlist,
+    }),
+  },
+  methods: {
+    ...mapActions("wishlistModule", ["fetchWishlist"]),
+  },
+  mounted() {
+    if (this.wishlistItems.length === 0) {
+      this.fetchWishlist();
+    }
+  },
 };
 </script>
 

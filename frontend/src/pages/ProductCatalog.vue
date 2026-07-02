@@ -1,10 +1,18 @@
 <template>
-  <div class="bg-light py-5 min-vh-100">
-    <div class="container">
+  <div class="bg-light">
+    <div class="d-flex justify-content-end mb-3 px-3 py-3">
+      <!-- <button class="btn btn-primary" @click="navigateToAddProduct">
+        Add Product
+      </button> -->
+      <router-link class="btn btn-primary" :to="{ path: '/product/add' }"
+        >Add Product
+      </router-link>
+    </div>
+    <div class="container mb-5">
       <!-- Controls Panel: Filters & Sorting -->
       <div class="row g-3 mb-4 align-items-center bg-white p-3 rounded shadow-sm mx-0">
         <!-- Filter by Category -->
-        <div class="col-12 col-md-4" v-loader="!displayedProducts.length">
+        <div class="col-12 col-md-4" v-loader="isLoading">
           <label class="form-label small fw-bold text-muted">Category</label>
           <select v-model="filters.category" class="form-select">
             <option value="all">All Categories</option>
@@ -15,7 +23,7 @@
         </div>
 
         <!-- Filter by Availability -->
-        <div class="col-12 col-md-4" v-loader="!displayedProducts.length">
+        <div class="col-12 col-md-4" v-loader="isLoading">
           <label class="form-label small fw-bold text-muted">Availability</label>
           <select v-model="filters.stock" class="form-select">
             <option value="all">All Items</option>
@@ -25,7 +33,7 @@
         </div>
 
         <!-- Sorting Controls -->
-        <div class="col-12 col-md-4" v-loader="!displayedProducts.length">
+        <div class="col-12 col-md-4" v-loader="isLoading">
           <label class="form-label small fw-bold text-muted">Sort By</label>
           <select v-model="sortBy" class="form-select">
             <option value="default">Default</option>
@@ -47,7 +55,7 @@
           class="btn-group btn-group-sm shadow-sm"
           role="group"
           aria-label="Layout view toggle"
-          v-loader="!displayedProducts.length"
+          v-loader="isLoading"
         >
           <button
             type="button"
@@ -137,7 +145,11 @@
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center gap-2">
-                  <button v-if="product.stock > 0" class="btn btn-primary flex-grow-1">
+                  <button
+                    v-if="product.stock > 0"
+                    class="btn btn-primary flex-grow-1"
+                    @click="addToCart(product)"
+                  >
                     <i class="bi bi-cart-plus me-1"></i> Add to Cart
                   </button>
                   <button v-else class="btn btn-outline-danger flex-grow-1" disabled>
@@ -170,7 +182,7 @@
 
       <!-- Empty State -->
       <div
-        v-loader="!displayedProducts.length"
+        v-loader="isLoading"
         v-else
         class="text-center py-5 bg-white rounded shadow-sm"
       >
@@ -284,6 +296,7 @@ export default {
         stock: "all",
       },
       productToDelete: null,
+      isLoading: true,
     };
   },
   computed: {
@@ -334,6 +347,7 @@ export default {
     ...mapState({
       products: (state) => state.productModule.products.items,
       productCount: (state) => state.productModule.products.total,
+      wishlist: (state) => state.wishlistModule.wishlist,
     }),
   },
   watch: {
@@ -348,7 +362,10 @@ export default {
     },
   },
   mounted() {
-    this.fetchProducts();
+    this.isLoading = true;
+    Promise.all([this.fetchProducts(), this.fetchWishlist()]).finally(() => {
+      this.isLoading = false;
+    });
   },
   updated() {
     this.$nextTick(() => {
@@ -358,11 +375,13 @@ export default {
     });
   },
   methods: {
-    ...mapActions("productModule", ["fetchProducts", "deleteProduct"]),
+    ...mapActions("productModule", ["fetchProducts", "deleteProduct", "fetchWishlist"]),
     ...mapActions("wishlistModule", [
       "addToWishlist",
       "removeFromWishlist",
+      "fetchWishlist",
     ]),
+    ...mapActions("cartModule", ["addProductToCart"]),
     formatCategory(value) {
       if (typeof value !== "string") return "";
       return value
@@ -400,6 +419,9 @@ export default {
       if (!this.productToDelete) return;
       this.deleteProduct(this.productToDelete.id);
       this.productToDelete = null;
+    },
+    addToCart(product) {
+      this.addProductToCart({ product, quantity: 1 });
     },
   },
 };

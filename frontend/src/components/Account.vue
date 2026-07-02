@@ -46,10 +46,14 @@ export default {
   },
   methods: {
     ...mapActions("userModule", ["logout"]),
+    ...mapActions("wishlistModule", ["clearWishlist"]),
+    ...mapActions("cartModule", ["clearCart"]),
     ...mapActions(["addNotification"]),
     async logoutUser() {
       this.$emit('close');
       await this.logout();
+      this.clearWishlist();
+      this.clearCart();
       this.addNotification({
         type: "success",
         message: "Logged out successfully",

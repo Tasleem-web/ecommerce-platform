@@ -83,7 +83,7 @@
 
       <!-- Right Side: Order Summary Checkout Card (col-lg-4) -->
       <div class="col-lg-4">
-        <div class="card shadow-sm border p-4 sticky-top" style="top: 20px">
+        <div class="card shadow-sm border p-4" style="top: 20px">
           <h4 class="mb-4">Order Summary</h4>
 
           <div class="d-flex justify-content-between mb-2">

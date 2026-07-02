@@ -51,7 +51,15 @@
                 >
                   <font-awesome-icon :icon="navbar.icon" class="edit-icon" />
                   {{ navbar.name }}
-                  <span class="badge bg-danger text-white">2</span>
+                  <span
+                    class="badge bg-danger text-white"
+                    v-if="navbar.name === 'Wishlist'"
+                  >
+                    {{ wishlistCount }}
+                  </span>
+                  <span class="badge bg-danger text-white" v-if="navbar.name === 'Cart'">
+                    {{ cartCounts }}
+                  </span>
 
                   <!-- The MiniCart will act as the dropdown menu -->
                   <MiniCart v-if="navbar.name === 'Cart'" class="dropdown-menu" />
@@ -111,7 +119,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions, mapState } from "vuex";
 import MiniCart from "./MiniCart.vue";
 import Account from "./Account.vue";
 
@@ -125,11 +133,18 @@ export default {
     ...mapGetters({
       currentUser: "userModule/currentUser",
       isAdmin: "userModule/isAdmin",
+      wishlistCount: "wishlistModule/wishlistCount",
+      cartCounts: "cartModule/cartCounts",
     }),
   },
   methods: {
     ...mapActions("userModule", ["logout"]),
     ...mapActions(["addNotification"]),
+    ...mapActions("cartModule", ["getCartItems"]),
+    ...mapState({
+      wishlist: (state) => state.wishlistModule.wishlist,
+      // cart: (state) => state.cartModule.cart,
+    }),
     async logoutUser() {
       await this.logout();
       this.addNotification({
@@ -147,6 +162,10 @@ export default {
     navigateTo(path) {
       this.$router.push(path);
     },
+  },
+  mounted() {
+    // Fetch cart items when the component is mounted
+    this.getCartItems();
   },
   data() {
     return {
@@ -197,8 +216,8 @@ export default {
 
 <style scoped>
 .profile-icon {
-  width: 50px;
-  height: 50px;
+  width: 42px;
+  height: 42px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -219,7 +238,7 @@ export default {
   margin-top: 0; /* Aligns the menu cleanly under the button */
   right: 0; /* Ensures the menu aligns to the right edge of the button */
   left: auto; /* Overrides any default left alignment */
-  top: 2.8rem;
+  top: 40px;
 }
 
 /* Optional: Ensures the dropdown doesn't instantly snap shut if the cursor gaps */

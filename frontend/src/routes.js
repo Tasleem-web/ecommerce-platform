@@ -36,6 +36,12 @@ export default [
     props: true,
   },
   {
+    path: '/product/add',
+    name: "product-add",
+    component: ProductConfiguration,
+    props: true,
+  },
+  {
     path: '/products',
     name: "products",
     component: ProductCatalog,

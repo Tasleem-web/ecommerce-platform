@@ -139,6 +139,7 @@ export default {
   methods: {
     ...mapActions("userModule", ["authenticate"]),
     ...mapActions(["addNotification"]),
+    ...mapActions("cartModule", ["getCartItems"]),
 
     async login() {
       this.touched.email = true;
@@ -157,6 +158,7 @@ export default {
           email: this.formData.email,
           password: this.formData.password,
         });
+        this.getCartItems();
         this.$router.push({ name: "home" });
       } catch (err) {
         console.error("Login failed", err);

@@ -1,4 +1,5 @@
 <template>
+  <!-- <pre> {{ JSON.stringify(cart, null, 2) }}</pre> -->
   <div
     class="dropdown-menu dropdown-menu-end p-2"
     aria-labelledby="dropdownMenuButton1"
@@ -7,9 +8,9 @@
     <div v-for="product in cart" :key="product.id">
       <div class="d-flex px-2 justify-content-between">
         <div>
-          <strong>{{ product.product.title }}</strong>
+          <strong>{{ product?.title }}</strong>
           <br />
-          {{ product.quantity }} x ${{ product.product.price }}
+          {{ product?.quantity }} x ${{ product?.price }}
         </div>
         <div>
           <a
@@ -41,30 +42,26 @@
   </div>
 </template>
 
-// <script>
-// import { mapGetters, mapState, mapActions } from "vuex";
-// export default {
-//   name: "MiniCart",
-//   computed: {
-//     ...mapState("cartModule", ["cart"]),
-//     // ...mapState({
-//     //   cart: (state) => state.cartModule.cart,
-//     // }),
-//     ...mapGetters("cartModule", ["cartTotalPrice"]),
-//   },
-//   methods: {
-//     ...mapActions({
-//       getCartItems: "cartModule/getCartItems",
-//       clearCartItems: "cartModule/clearCartItems",
-//       removeItemFromCart: "cartModule/removeItemFromCart",
-//     }),
-//     // ...mapActions(["getCartItems", "clearCartItems", "removeItemFromCart"]),
-//   },
-//   mounted() {
-//     this.getCartItems();
-//   },
-// };
-// </script>
+<script>
+import { mapGetters, mapState, mapActions } from "vuex";
+export default {
+  name: "MiniCart",
+  computed: {
+    ...mapState("cartModule", ["cart"]),
+    // ...mapState({
+    //   cart: (state) => state.cartModule.cart,
+    // }),
+    ...mapGetters("cartModule", ["cartTotalPrice"]),
+  },
+  methods: {
+    ...mapActions({
+      clearCartItems: "cartModule/clearCartItems",
+      removeItemFromCart: "cartModule/removeItemFromCart",
+    }),
+    // ...mapActions(["getCartItems", "clearCartItems", "removeItemFromCart"]),
+  },
+};
+</script>
 
 <style scoped>
 .dropdown-menu {

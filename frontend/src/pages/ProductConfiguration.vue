@@ -37,11 +37,29 @@
                     accept="image/*"
                     @change="onImageChange"
                   />
+                  <div
+                    class="text-muted font-weight-bold d-flex justify-content-center align-items-center my-3"
+                  >
+                    <span class="badge bg-secondary">OR</span>
+                  </div>
+                  <div class="w-100 mt-3">
+                    <label for="imageUrl" class="form-label small fw-bold"
+                      >Image URL</label
+                    >
+                    <input
+                      id="imageUrl"
+                      v-model="form.image"
+                      type="url"
+                      class="form-control"
+                      placeholder="Paste image URL here"
+                      @input="clearImageError"
+                    />
+                  </div>
                   <small class="text-muted mt-2">
                     {{
                       uploadingImage
                         ? "Uploading image..."
-                        : "Click the image to choose a file"
+                        : "Click the image to upload a file, or paste a direct image URL above"
                     }}
                   </small>
                   <div v-if="errors.image" class="text-danger small mt-1">
@@ -261,6 +279,11 @@ export default {
       }
 
       this.uploadProductImage(file);
+    },
+    clearImageError() {
+      if (this.errors.image) {
+        this.errors.image = "";
+      }
     },
     readFileAsDataUrl(file) {
       return new Promise((resolve, reject) => {

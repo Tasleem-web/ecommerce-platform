@@ -44,3 +44,7 @@ export const removeFromWishlist = async ({ commit, dispatch }, { productId, titl
     console.error("Error removing from wishlist:", err);
   }
 }
+
+export const clearWishlist = async ({ commit }) => {
+  commit("CLEAR_WISHLIST");
+}
