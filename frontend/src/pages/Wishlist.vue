@@ -65,7 +65,7 @@ export default {
       this.removeItem({ productId: item.productId, title: item.title });
     },
     exploreProducts() {
-      this.$router.push("/catalog");
+      this.$router.push("/products");
     },
   },
 };

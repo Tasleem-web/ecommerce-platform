@@ -127,34 +127,12 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   name: "CartComponent",
   data() {
-    return {
-      // Mock data structured identically to your microservice output layout
-      cartItems: [
-        {
-          id: 101,
-          userId: 3,
-          productId: 12,
-          title: "John Hardy Women's Chain Bracelet",
-          category: "jewelry",
-          image: "https://fakestoreapi.com",
-          price: 695.0,
-          quantity: 1,
-        },
-        {
-          id: 102,
-          userId: 3,
-          productId: 2,
-          title: "Mens Casual Premium Slim Fit T-Shirts",
-          category: "men's clothing",
-          image: "https://fakestoreapi.com",
-          price: 22.3,
-          quantity: 2,
-        },
-      ],
-    };
+    return {};
   },
   computed: {
     // Computes aggregate number of objects currently residing in stack
@@ -165,6 +143,9 @@ export default {
     cartTotalAmount() {
       return this.cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
     },
+    ...mapState({
+      cartItems: (state) => state.cartModule.cart,
+    }),
   },
   methods: {
     // Updates quantity counter values seamlessly
