@@ -8,7 +8,7 @@
         >Add Product
       </router-link>
     </div>
-    <div class="container mb-5">
+    <div class="container pb-4 mb-4">
       <!-- Controls Panel: Filters & Sorting -->
       <div class="row g-3 mb-4 align-items-center bg-white p-3 rounded shadow-sm mx-0">
         <!-- Filter by Category -->

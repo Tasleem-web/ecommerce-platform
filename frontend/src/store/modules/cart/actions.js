@@ -50,7 +50,7 @@ export const removeItemFromCart = ({ commit, dispatch }, cartItem) => {
 
   dispatch("addNotification", {
     type: "warning",
-    message: `Removed ${cartItem.product.title} from cart`,
+    message: `Removed ${cartItem.title} from cart`,
     timeout: 3000
   }, { root: true });
 
